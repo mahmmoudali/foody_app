@@ -1,0 +1,437 @@
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:foody_app/colors.dart';
+import 'package:foody_app/components/custom_suffix_icon.dart';
+import 'package:foody_app/components/default_button.dart';
+import 'package:foody_app/components/social_card.dart';
+import 'package:foody_app/constants.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:sizer/sizer.dart';
+import 'package:image_picker/image_picker.dart';
+
+class AddNewRecipeScreen extends StatefulWidget {
+  static String routeName = '/AddNewRecipeScreen';
+
+  @override
+  _AddNewRecipeScreenState createState() => _AddNewRecipeScreenState();
+}
+
+class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
+  final _formKey = GlobalKey<FormState>();
+
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  final List<String> errors = [];
+
+  List<File> images = [];
+
+  String email, password, name, age;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        key: _scaffoldKey,
+        body: Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            SafeArea(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 25.h,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Align(
+                              alignment: Alignment.center,
+                              child: Center(
+                                child: Container(
+                                  width: 40.w,
+                                  color: MColors.covidMain,
+                                  child: GestureDetector(
+                                    onTap: () async {
+                                      List<PickedFile> pickedImages =
+                                          await ImagePicker().getMultiImage(
+
+                                              // source: ImageSource.gallery,
+
+                                              //pick from device gallery
+                                              maxWidth: 1920,
+                                              maxHeight:
+                                                  1200, //specify size and quality
+                                              imageQuality: 80);
+                                      pickedImages.forEach(
+                                          (e) => images.add(File(e.path)));
+                                      // await Future.delayed(
+                                      //     Duration(seconds: 3));
+                                      setState(() {
+                                        print(images);
+                                      });
+
+                                      //so image_picker will resize for you
+                                      // Reference ref = FirebaseStorag.instance
+                                      //     .ref()
+                                      //     .child(
+                                      //         "unique_name.jpg"); //generate a unique name
+                                      // showLoading(context);
+                                      // await ref.putFile(File(pickedImage
+                                      //     .path)); //you need to add path here
+                                      // imageUrl = await ref.getDownloadURL();
+                                      // print(imageUrl);
+                                      // await user
+                                      //     .updatePhotoURL(imageUrl)
+                                      //     .whenComplete(() => user =
+                                      //         FirebaseAuth
+                                      //             .instance.currentUser);
+                                      // setState(() {
+                                      //   print("done");
+                                      // });
+                                      // await Future.delayed(
+                                      //     Duration(seconds: 2));
+
+                                      // Navigator.pop(context);
+
+                                      // user.reload();
+                                    },
+                                    // child: CircleAvatar(
+                                    //   radius: 50.h,
+                                    //   backgroundColor: MColors.covidThird,
+                                    //   backgroundImage: user.photoURL != null
+                                    //       ? NetworkImage(user.photoURL)
+                                    //       : AssetImage(
+                                    //           "assets/images/ic_launcher.png",
+                                    //         ),
+                                    // ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              bottom: 3.h,
+                              right: 30.w,
+                              child: GestureDetector(
+                                onTap: () {
+                                  // provider2?.getImage(mPresenter);
+                                },
+                                child: Container(
+                                  width: 8.w,
+                                  height: 8.w,
+                                  decoration: new BoxDecoration(
+                                    color: MColors.covidMain.withOpacity(.9),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    Icons.camera_alt,
+                                    size: 4.w,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (images.length > 0)
+                        Container(
+                          margin: EdgeInsets.symmetric(
+                              vertical: 1.h, horizontal: 2.w),
+                          height: 25.h,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: images.length,
+                            itemBuilder: (context, index) => Container(
+                              margin: EdgeInsets.only(right: 1.h, top: 1.h),
+                              height: 25.h,
+                              width: 25.h,
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image:
+                                          FileImage(File(images[index].path)),
+                                      fit: BoxFit.cover),
+                                  color: MColors.covidMain,
+                                  borderRadius: BorderRadius.circular(3.h)),
+                            ),
+                          ),
+                        ),
+                      // images.length > 0
+                      //     ? Container(
+                      //         height: 80.h,
+                      //         child: Column(
+                      //           children: [
+                      //             ListView.builder(
+                      //               // scrollDirection: Axis.horizontal,
+                      //               itemCount: images.length,
+                      //               itemBuilder: (context, index) {
+                      //                 return Container(
+                      //                   // height: 15.h,
+                      //                   // width: 15.h,
+                      //                   child: Image.asset(
+                      //                     images[index].path,
+                      //                     fit: BoxFit.cover,
+                      //                     width: 15,
+                      //                   ),
+                      //                 );
+                      //               },
+                      //             )
+                      //           ],
+                      //         ),
+                      //       )
+                      //     : CircularProgressIndicator()
+                      // buildSignInForm(context),
+                      // // SizedBox(height: 5.h),
+                      // // buildSocialLogin(),
+                      // SizedBox(height: 1.h),
+                      // Text(
+                      //     'By Continuing your confirm that means you \nagree with our terms and conditions ',
+                      //    textAlign: TextAlign.center)
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            // provider.isLoading
+            //     ? Align(
+            //         alignment: Alignment.bottomCenter,
+            //         child: LoadingIndicator(size: 11),
+            //       )
+            //     : Container()
+          ],
+        ));
+  }
+
+  Form buildSignInForm(BuildContext context) {
+    return Form(
+        key: _formKey,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 2.w),
+          width: double.infinity,
+          child: Column(
+            children: [
+              buildNameFormField(),
+              SizedBox(height: 1.h),
+              buildAgeFormField(),
+              SizedBox(height: 1.h),
+              buildEmailFormField(context),
+              SizedBox(height: 1.h),
+              buildPasswordFormField(context),
+              SizedBox(height: 4.h),
+              DefaultButton(
+                text: 'Continue',
+                press: () {
+                  submit(context);
+                },
+              ),
+            ],
+          ),
+        ));
+  }
+
+  Future submit(BuildContext context) async {
+    // final provider = Provider.of<EmailSignInProvider>(context, listen: false);
+    // provider.isLogin = false;
+    // FocusScope.of(context).unfocus();
+    // if (_formKey.currentState.validate()) {
+    //   _formKey.currentState.save();
+    //   final isSuccess = await provider.login();
+    //   if (isSuccess) {
+    //     final msg = "Account Registered";
+    //     _scaffoldKey.currentState.showSnackBar(SnackBar(
+    //       content: Text(msg),
+    //       backgroundColor: MColors.covidMain,
+    //     ));
+
+    //     await Future.delayed(Duration(seconds: 1));
+    //     Navigator.pop(context);
+    //   } else {
+    //     final msg = "An error occurred, please check your credential";
+    //     _scaffoldKey.currentState.showSnackBar(SnackBar(
+    //       content: Text(msg),
+    //       backgroundColor: Theme.of(context).errorColor,
+    //     ));
+    //   }
+    // }
+  }
+
+  Align buildBackToLoginArrow(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: GestureDetector(
+          onTap: () => Navigator.pop(context),
+          child: Row(
+            children: [
+              Icon(Icons.arrow_back_ios, size: 2.h),
+              Text(
+                "login",
+                style: TextStyle(color: MColors.kTextColor),
+              )
+            ],
+          )),
+    );
+  }
+
+  Widget buildLogoArea() {
+    return Column(
+      children: [
+        Container(
+          height: 15.h,
+          width: 20.h,
+          child: Image.asset("assets/images/logo-trial.png"),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "COVID-19 ",
+              style: TextStyle(
+                  fontFamily: "Plex",
+                  fontSize: 2.5.h,
+                  fontWeight: FontWeight.bold,
+                  color: MColors.covidMain),
+            ),
+            Text(
+              "APP",
+              style: TextStyle(
+                  fontFamily: "Plex",
+                  fontSize: 2.5.h,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.lightGreen),
+            )
+          ],
+        ),
+      ],
+    );
+  }
+
+  buildSocialLogin() {
+    return Column(
+      children: [
+        Text(
+          "Or you can register with",
+          style: TextStyle(fontFamily: "Plex", color: MColors.kTextColor),
+        ),
+        SizedBox(height: 1.h),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SocialCard(
+              icon: 'assets/icons/google-icon.svg',
+              press: () {},
+            ),
+            SocialCard(
+              icon: 'assets/icons/facebook-2.svg',
+              press: () {},
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  TextFormField buildPasswordFormField(BuildContext context) {
+    // final provider = Provider.of<EmailSignInProvider>(context);
+    return TextFormField(
+      onSaved: (newValue) => password = newValue,
+      validator: (value) {
+        if (value.isEmpty)
+          return "You must enter a password";
+        else if (value.length < 8)
+          return "Password must be more than 8 chars";
+        else
+          return null;
+      },
+      onFieldSubmitted: (value) {
+        _formKey.currentState.validate();
+      },
+      obscureText: true,
+      decoration: InputDecoration(
+        // floatingLabelBehavior: FloatingLabelBehavior.always,
+        // hintText: 'nter your password',
+        suffixIcon: CustomSuffixIcon(
+          svgIcon: 'assets/icons/Lock.svg',
+        ),
+        labelText: 'Password',
+      ),
+    );
+  }
+
+  TextFormField buildEmailFormField(BuildContext context) {
+    // final provider = Provider.of<EmailSignInProvider>(context);
+
+    return TextFormField(
+      onSaved: (newValue) => email = newValue,
+      validator: (value) {
+        if (value.isEmpty)
+          return "You must enter an email";
+        else if (!emailValidatorRegExp.hasMatch(value))
+          return "You must enter a valid email";
+        else
+          return null;
+      },
+      onFieldSubmitted: (value) {
+        _formKey.currentState.validate();
+      },
+      keyboardType: TextInputType.emailAddress,
+      decoration: InputDecoration(
+        // floatingLabelBehavior: FloatingLabelBehavior.always,
+        // hintText: 'Enter your email',
+        suffixIcon: CustomSuffixIcon(
+          svgIcon: 'assets/icons/Mail.svg',
+        ),
+        labelText: 'Email',
+      ),
+    );
+  }
+
+  TextFormField buildNameFormField() {
+    return TextFormField(
+      onSaved: (newValue) => name = newValue,
+      validator: (value) {
+        if (value.isEmpty)
+          return "You must enter your name";
+        else
+          return null;
+      },
+      onFieldSubmitted: (value) {
+        _formKey.currentState.validate();
+      },
+      keyboardType: TextInputType.name,
+      decoration: InputDecoration(
+        // floatingLabelBehavior: FloatingLabelBehavior.always,
+        // hintText: 'Enter your email',
+        suffixIcon: CustomSuffixIcon(
+          svgIcon: 'assets/icons/User.svg',
+        ),
+        labelText: 'Name',
+      ),
+    );
+  }
+
+  TextFormField buildAgeFormField() {
+    return TextFormField(
+      onSaved: (newValue) => age = newValue,
+      validator: (value) {
+        if (value.isEmpty)
+          return "You must enter your age";
+        else
+          return null;
+      },
+      onFieldSubmitted: (value) {
+        _formKey.currentState.validate();
+      },
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(
+        // floatingLabelBehavior: FloatingLabelBehavior.always,
+        // hintText: 'Enter your email',
+        suffixIcon: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 5.w),
+          child: Icon(FontAwesomeIcons.calendarAlt),
+        ),
+        labelText: 'Age',
+      ),
+    );
+  }
+}
