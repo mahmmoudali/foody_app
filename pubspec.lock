@@ -8,6 +8,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.5.0"
+  awesome_dropdown:
+    dependency: "direct main"
+    description:
+      name: awesome_dropdown
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.4"
   boolean_selector:
     dependency: transitive
     description:
@@ -78,6 +85,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.2.0"
+  find_dropdown:
+    dependency: "direct main"
+    description:
+      name: find_dropdown
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -233,6 +247,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.0.0"
+  select_dialog:
+    dependency: transitive
+    description:
+      name: select_dialog
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   sizer:
     dependency: "direct main"
     description:

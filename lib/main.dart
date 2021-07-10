@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       return MaterialApp(
         title: 'Foody',
         theme: ThemeData(
-          primarySwatch: Colors.orange,
+          primaryColor: Color(0xFFDF3D0C),
         ),
         initialRoute: RecipeDetailsScreen.routeName,
         routes: Routes.routes,
