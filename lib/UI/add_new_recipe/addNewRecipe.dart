@@ -1,15 +1,8 @@
 import 'dart:io';
 import 'package:awesome_dropdown/awesome_dropdown.dart';
-import 'package:find_dropdown/find_dropdown.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:foody_app/colors.dart';
-import 'package:foody_app/components/custom_suffix_icon.dart';
-import 'package:foody_app/components/default_button.dart';
-import 'package:foody_app/components/social_card.dart';
-import 'package:foody_app/constants.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sizer/sizer.dart';
 import 'package:image_picker/image_picker.dart';
@@ -23,17 +16,18 @@ class AddNewRecipeScreen extends StatefulWidget {
 
 class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
   final _formKey = GlobalKey<FormState>();
-
+  final _ingredientKey = GlobalKey<FormState>();
+  final _stepKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
   TextEditingController ingredientController = TextEditingController();
-
-  final List<String> errors = [];
+  TextEditingController stepController = TextEditingController();
 
   List<File> images = [];
   List<String> ingredients = [];
+  List<String> steps = [];
 
-  String email, password, title, age, recipetype, ingredient;
+  String title, recipetype, ingredient, step;
 
   @override
   Widget build(BuildContext context) {
@@ -46,37 +40,146 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
               child: SingleChildScrollView(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 1.h, horizontal: 4.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      buildAddImagesBar(context),
-                      ValidationError(
-                        condition: images.length > 9,
-                        error: "Maximum 10 Images",
-                      ),
-                      buildTitleAndDescriptionForm(),
-                      buildRecipeTypeDropDown(),
-                      Column(
-                        children: [
-                          buildIngredientTextFormFieldWithAdd(context),
-                          Container(
-                            height: 30.h,
-                            child: ListView.builder(
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: ingredients.length,
-                              itemBuilder: (context, index) =>
-                                  Container(child: Text(ingredients[index])),
-                            ),
-                          )
-                        ],
-                      )
-                    ],
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        buildAddImagesBar(context),
+                        ValidationError(
+                          condition: images.length > 9,
+                          error: "Maximum 10 Images",
+                        ),
+                        buildTitleAndDescriptionForm(),
+                        buildRecipeTypeDropDown(),
+                        buildIngredientsPart(context),
+                        buildStepsPart(context)
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
           ],
         ));
+  }
+
+  Column buildIngredientsPart(BuildContext context) {
+    return Column(
+      children: [
+        buildIngredientTextFormFieldWithAdd(context),
+        Visibility(
+          visible: ingredients.length > 0,
+          child: Container(
+            height: 20.h,
+            child: ListView.builder(
+              // physics: NeverScrollableScrollPhysics(),
+              itemCount: ingredients.length,
+              itemBuilder: (context, index) => Container(
+                  child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                      width: double.infinity,
+                      margin: EdgeInsets.symmetric(vertical: .2.h),
+                      decoration: BoxDecoration(
+                          color: Colors.green[300].withOpacity(.5)),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 1.h, horizontal: 1.w),
+                      child: Text(
+                        ingredients[index],
+                        style: TextStyle(
+                            fontFamily: "Plex",
+                            fontSize: 14.sp,
+                            // fontWeight: FontWeight.bold,
+                            color: Colors.black),
+                      )),
+                  Positioned(
+                    right: 1.w,
+                    // top: 1.h,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          ingredients.removeAt(index);
+                        });
+                      },
+                      child: Container(
+                        height: 4.h,
+                        width: 4.h,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          // color:
+                          //     Theme.of(context).primaryColor
+                        ),
+                        child: Icon(FontAwesomeIcons.trash,
+                            size: 2.h, color: Theme.of(context).primaryColor),
+                      ),
+                    ),
+                  ),
+                ],
+              )),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  Column buildStepsPart(BuildContext context) {
+    return Column(
+      children: [
+        buildStepsTextFormFieldWithAdd(context),
+        Visibility(
+          visible: steps.length > 0,
+          child: Container(
+            height: 20.h,
+            child: ListView.builder(
+              // physics: NeverScrollableScrollPhysics(),
+              itemCount: steps.length,
+              itemBuilder: (context, index) => Container(
+                  child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                      width: double.infinity,
+                      margin: EdgeInsets.symmetric(vertical: .2.h),
+                      decoration: BoxDecoration(
+                          color: Colors.green[300].withOpacity(.5)),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 1.h, horizontal: 1.w),
+                      child: Text(
+                        steps[index],
+                        style: TextStyle(
+                            fontFamily: "Plex",
+                            fontSize: 14.sp,
+                            // fontWeight: FontWeight.bold,
+                            color: Colors.black),
+                      )),
+                  Positioned(
+                    right: 1.w,
+                    // top: 1.h,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          steps.removeAt(index);
+                        });
+                      },
+                      child: Container(
+                        height: 4.h,
+                        width: 4.h,
+                        decoration: BoxDecoration(),
+                        child: Icon(FontAwesomeIcons.trash,
+                            size: 2.h, color: Theme.of(context).primaryColor),
+                      ),
+                    ),
+                  ),
+                ],
+              )),
+            ),
+          ),
+        )
+      ],
+    );
   }
 
   Container buildIngredientTextFormFieldWithAdd(BuildContext context) {
@@ -89,9 +192,44 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
           GestureDetector(
             onTap: () {
               setState(() {
-                ingredients.add(ingredientController.text);
-                print(ingredients);
-                ingredientController.clear();
+                if (ingredientController.text.length > 10) {
+                  ingredients.add(ingredientController.text);
+                  print(ingredients);
+                  ingredientController.clear();
+                } else
+                  _formKey.currentState.validate();
+              });
+            },
+            child: Container(
+              height: 6.5.h,
+              width: 5.h,
+              decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  color: Theme.of(context).primaryColor),
+              child: Icon(Icons.add, size: 3.h, color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Container buildStepsTextFormFieldWithAdd(BuildContext context) {
+    return Container(
+      width: 100.w,
+      child: Row(
+        children: [
+          Container(width: 80.w, child: buildStepFormField()),
+          Spacer(),
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                if (stepController.text.length > 10) {
+                  steps.add(stepController.text);
+                  print(steps);
+                  stepController.clear();
+                } else
+                  _formKey.currentState.validate();
               });
             },
             child: Container(
@@ -132,7 +270,7 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
               fontSize: 14.sp,
             ),
             isPanDown: false,
-            dropDownList: ["Breakfast", "Launch", "Dinner"],
+            dropDownList: ["Breakfast", "Launch", "Dinner", "Dessert"],
             dropDownIcon: Icon(
               Icons.arrow_drop_down,
               color: Colors.grey,
@@ -153,16 +291,14 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
     );
   }
 
-  Form buildTitleAndDescriptionForm() {
-    return Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            buildTitleFormField(),
-            SizedBox(height: .5.h),
-            buildDescriptionFormField(),
-          ],
-        ));
+  Widget buildTitleAndDescriptionForm() {
+    return Column(
+      children: [
+        buildTitleFormField(),
+        SizedBox(height: .5.h),
+        buildDescriptionFormField(),
+      ],
+    );
   }
 
   Column buildAddImagesBar(BuildContext context) {
@@ -283,189 +419,6 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
     );
   }
 
-  Form buildSignInForm(BuildContext context) {
-    return Form(
-        key: _formKey,
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 2.w),
-          width: double.infinity,
-          child: Column(
-            children: [
-              // buildNameFormField(),
-              SizedBox(height: 1.h),
-              buildAgeFormField(),
-              SizedBox(height: 1.h),
-              buildEmailFormField(context),
-              SizedBox(height: 1.h),
-              buildPasswordFormField(context),
-              SizedBox(height: 4.h),
-              DefaultButton(
-                text: 'Continue',
-                press: () {
-                  submit(context);
-                },
-              ),
-            ],
-          ),
-        ));
-  }
-
-  Future submit(BuildContext context) async {
-    // final provider = Provider.of<EmailSignInProvider>(context, listen: false);
-    // provider.isLogin = false;
-    // FocusScope.of(context).unfocus();
-    // if (_formKey.currentState.validate()) {
-    //   _formKey.currentState.save();
-    //   final isSuccess = await provider.login();
-    //   if (isSuccess) {
-    //     final msg = "Account Registered";
-    //     _scaffoldKey.currentState.showSnackBar(SnackBar(
-    //       content: Text(msg),
-    //       backgroundColor: MColors.covidMain,
-    //     ));
-
-    //     await Future.delayed(Duration(seconds: 1));
-    //     Navigator.pop(context);
-    //   } else {
-    //     final msg = "An error occurred, please check your credential";
-    //     _scaffoldKey.currentState.showSnackBar(SnackBar(
-    //       content: Text(msg),
-    //       backgroundColor: Theme.of(context).errorColor,
-    //     ));
-    //   }
-    // }
-  }
-
-  Align buildBackToLoginArrow(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: GestureDetector(
-          onTap: () => Navigator.pop(context),
-          child: Row(
-            children: [
-              Icon(Icons.arrow_back_ios, size: 2.h),
-              Text(
-                "login",
-                style: TextStyle(color: MColors.kTextColor),
-              )
-            ],
-          )),
-    );
-  }
-
-  Widget buildLogoArea() {
-    return Column(
-      children: [
-        Container(
-          height: 15.h,
-          width: 20.h,
-          child: Image.asset("assets/images/logo-trial.png"),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "COVID-19 ",
-              style: TextStyle(
-                  fontFamily: "Plex",
-                  fontSize: 2.5.h,
-                  fontWeight: FontWeight.bold,
-                  color: MColors.covidMain),
-            ),
-            Text(
-              "APP",
-              style: TextStyle(
-                  fontFamily: "Plex",
-                  fontSize: 2.5.h,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.lightGreen),
-            )
-          ],
-        ),
-      ],
-    );
-  }
-
-  buildSocialLogin() {
-    return Column(
-      children: [
-        Text(
-          "Or you can register with",
-          style: TextStyle(fontFamily: "Plex", color: MColors.kTextColor),
-        ),
-        SizedBox(height: 1.h),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SocialCard(
-              icon: 'assets/icons/google-icon.svg',
-              press: () {},
-            ),
-            SocialCard(
-              icon: 'assets/icons/facebook-2.svg',
-              press: () {},
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  TextFormField buildPasswordFormField(BuildContext context) {
-    // final provider = Provider.of<EmailSignInProvider>(context);
-    return TextFormField(
-      onSaved: (newValue) => password = newValue,
-      validator: (value) {
-        if (value.isEmpty)
-          return "You must enter a password";
-        else if (value.length < 8)
-          return "Password must be more than 8 chars";
-        else
-          return null;
-      },
-      onFieldSubmitted: (value) {
-        _formKey.currentState.validate();
-      },
-      obscureText: true,
-      decoration: InputDecoration(
-        // floatingLabelBehavior: FloatingLabelBehavior.always,
-        // hintText: 'nter your password',
-        suffixIcon: CustomSuffixIcon(
-          svgIcon: 'assets/icons/Lock.svg',
-        ),
-        labelText: 'Password',
-      ),
-    );
-  }
-
-  TextFormField buildEmailFormField(BuildContext context) {
-    // final provider = Provider.of<EmailSignInProvider>(context);
-
-    return TextFormField(
-      onSaved: (newValue) => email = newValue,
-      validator: (value) {
-        if (value.isEmpty)
-          return "You must enter an email";
-        else if (!emailValidatorRegExp.hasMatch(value))
-          return "You must enter a valid email";
-        else
-          return null;
-      },
-      onFieldSubmitted: (value) {
-        _formKey.currentState.validate();
-      },
-      keyboardType: TextInputType.emailAddress,
-      decoration: InputDecoration(
-        // floatingLabelBehavior: FloatingLabelBehavior.always,
-        // hintText: 'Enter your email',
-        suffixIcon: CustomSuffixIcon(
-          svgIcon: 'assets/icons/Mail.svg',
-        ),
-        labelText: 'Email',
-      ),
-    );
-  }
-
   TextFormField buildTitleFormField() {
     return TextFormField(
       onSaved: (newValue) => title = newValue,
@@ -515,51 +468,54 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
     );
   }
 
-  TextFormField buildIngredientFormField() {
+  Widget buildIngredientFormField() {
     return TextFormField(
       controller: ingredientController,
       onSaved: (newValue) => ingredient = newValue,
       validator: (value) {
         if (value.isEmpty)
-          return "You must enter recipe description";
+          return "You must enter ingredient content";
+        else if (value.length < 8)
+          return "ingredient must be more than 10 chars";
         else
           return null;
       },
       onFieldSubmitted: (value) {
         FocusScope.of(context).unfocus();
-        // _formKey.currentState.validate();
+        _ingredientKey.currentState.validate();
       },
       keyboardType: TextInputType.name,
       decoration: InputDecoration(
         // floatingLabelBehavior: FloatingLabelBehavior.always,
         // hintText: 'Enter your email',
 
-        labelText: 'Description',
+        labelText: 'Ingredient',
       ),
     );
   }
 
-  TextFormField buildAgeFormField() {
+  Widget buildStepFormField() {
     return TextFormField(
-      onSaved: (newValue) => age = newValue,
+      controller: stepController,
+      onSaved: (newValue) => ingredient = newValue,
       validator: (value) {
         if (value.isEmpty)
-          return "You must enter your age";
+          return "You must enter step content";
+        else if (value.length < 8)
+          return "step must be more than 10 chars";
         else
           return null;
       },
       onFieldSubmitted: (value) {
-        _formKey.currentState.validate();
+        FocusScope.of(context).unfocus();
+        _stepKey.currentState.validate();
       },
-      keyboardType: TextInputType.number,
+      keyboardType: TextInputType.name,
       decoration: InputDecoration(
         // floatingLabelBehavior: FloatingLabelBehavior.always,
         // hintText: 'Enter your email',
-        suffixIcon: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 5.w),
-          child: Icon(FontAwesomeIcons.calendarAlt),
-        ),
-        labelText: 'Age',
+
+        labelText: 'Step',
       ),
     );
   }
