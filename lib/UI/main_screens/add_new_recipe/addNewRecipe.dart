@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:awesome_dropdown/awesome_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:foody_app/colors.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:foody_app/UI/components/default_button.dart';
 import 'package:sizer/sizer.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -53,7 +53,17 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
                         buildTitleAndDescriptionForm(),
                         buildRecipeTypeDropDown(),
                         buildIngredientsPart(context),
-                        buildStepsPart(context)
+                        buildStepsPart(context),
+                        SizedBox(height: 2.h),
+                        Container(
+                          child: DefaultButton(
+                            color: Theme.of(context).primaryColor,
+                            press: () {
+                              //action here to submit data using post api
+                            },
+                            text: "Submit",
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -381,7 +391,7 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
                                         image:
                                             FileImage(File(images[index].path)),
                                         fit: BoxFit.cover),
-                                    color: MColors.covidMain,
+                                    color: Theme.of(context).primaryColor,
                                     borderRadius: BorderRadius.circular(2.h)),
                               ),
                               Positioned(

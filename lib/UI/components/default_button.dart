@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:foody_app/colors.dart';
-
 import 'package:sizer/sizer.dart';
 
 class DefaultButton extends StatelessWidget {
@@ -27,7 +25,7 @@ class DefaultButton extends StatelessWidget {
       child: FlatButton(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          color: color ?? MColors.covidMain,
+          color: color ?? Theme.of(context).primaryColor,
           onPressed: press,
           child: Text(
             '$text',

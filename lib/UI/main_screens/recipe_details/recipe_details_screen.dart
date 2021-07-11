@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:foody_app/UI/add_new_recipe/addNewRecipe.dart';
-import 'package:foody_app/UI/recipe_details/recipe_details_presenter.dart';
-import 'package:foody_app/UI/recipe_details/recipe_details_provider.dart';
-
-import 'package:foody_app/colors.dart';
+import 'package:foody_app/UI/main_screens/add_new_recipe/addNewRecipe.dart';
+import 'package:foody_app/UI/main_screens/recipe_details/recipe_details_presenter.dart';
+import 'package:foody_app/UI/main_screens/recipe_details/recipe_details_provider.dart';
 import 'package:foody_app/responses/recipe_response.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 
 class RecipeDetailsScreen extends StatelessWidget {
   static final String routeName = "/RecipeDetailsScreen";
-  RecipeDetailsPresenter presenter = RecipeDetailsPresenter();
+  final RecipeDetailsPresenter presenter = RecipeDetailsPresenter();
 
   @override
   Widget build(BuildContext _) {
@@ -25,6 +23,14 @@ class RecipeDetailsScreen extends StatelessWidget {
             future: presenter.getRecipeDetails(),
             builder: (context, AsyncSnapshot<RecipeResponse> snapshot) {
               RecipeResponse response = snapshot.data;
+              if (snapshot.hasData) {
+                // Map<String,bool> ingredients;
+                response.result.recipe.ingredients.forEach((element) {
+                  provider.addIngredient(element);
+                });
+                print("alii" + provider.ingredients.toString());
+                // provider.ingredients=
+              }
               return Scaffold(
                 body: SafeArea(
                     child: snapshot.hasData
@@ -41,7 +47,7 @@ class RecipeDetailsScreen extends StatelessWidget {
                                     buildRecipeTitle(response),
                                     buildRecipeDescription(response),
                                     buildUserPhotoAndName(response),
-                                    buildRecipePhoto(),
+                                    buildRecipePhoto(context),
                                     buildIngredients(response, provider),
                                     Column(
                                       crossAxisAlignment:
@@ -194,7 +200,7 @@ Container buildRecipeTitle(RecipeResponse response) {
   );
 }
 
-Center buildRecipePhoto() {
+Center buildRecipePhoto(BuildContext context) {
   return Center(
     child: Container(
       margin: EdgeInsets.only(bottom: 1.h, top: 1.h),
@@ -203,7 +209,7 @@ Center buildRecipePhoto() {
       decoration: BoxDecoration(
           image: DecorationImage(
               image: AssetImage("assets/images/food.jpeg"), fit: BoxFit.cover),
-          color: MColors.covidMain,
+          color: Theme.of(context).primaryColor,
           borderRadius: BorderRadius.circular(3.h)),
     ),
   );
@@ -240,7 +246,7 @@ Widget buildAdd(BuildContext context) {
       padding: EdgeInsets.symmetric(vertical: 1.h),
       width: 5.h,
       height: 5.h,
-      child: Icon(Icons.add, color: MColors.covidMain),
+      child: Icon(Icons.add, color: Theme.of(context).primaryColor),
     ),
   );
 }

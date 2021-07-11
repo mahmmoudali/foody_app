@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foody_app/routes.dart';
 import 'package:sizer/sizer.dart';
-
-import 'UI/recipe_details/recipe_details_screen.dart';
+import 'UI/main_screens/recipe_details/recipe_details_screen.dart';
 
 void main() {
   runApp(MyApp());
