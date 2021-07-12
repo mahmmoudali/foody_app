@@ -52,6 +52,10 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
                         ),
                         buildTitleAndDescriptionForm(),
                         buildRecipeTypeDropDown(),
+                        ValidationError(
+                          condition: recipetype == null,
+                          error: "Recipe type required",
+                        ),
                         buildIngredientsPart(context),
                         buildStepsPart(context),
                         SizedBox(height: 2.h),
@@ -78,12 +82,17 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
     return Column(
       children: [
         buildIngredientTextFormFieldWithAdd(context),
+        ValidationError(
+          condition: ingredients.length > 29,
+          error: "Maximum 30 ingredients",
+        ),
         Visibility(
           visible: ingredients.length > 0,
-          child: Container(
-            height: 20.h,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: 300.h, minHeight: 0.h),
             child: ListView.builder(
-              // physics: NeverScrollableScrollPhysics(),
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
               itemCount: ingredients.length,
               itemBuilder: (context, index) => Container(
                   child: Stack(
@@ -139,12 +148,17 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
     return Column(
       children: [
         buildStepsTextFormFieldWithAdd(context),
+        ValidationError(
+          condition: steps.length > 29,
+          error: "Maximum 30 steps",
+        ),
         Visibility(
           visible: steps.length > 0,
-          child: Container(
-            height: 20.h,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: 300.h, minHeight: 0.h),
             child: ListView.builder(
-              // physics: NeverScrollableScrollPhysics(),
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
               itemCount: steps.length,
               itemBuilder: (context, index) => Container(
                   child: Stack(
@@ -202,6 +216,7 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
           GestureDetector(
             onTap: () {
               setState(() {
+                FocusScope.of(context).unfocus();
                 if (ingredientController.text.length > 10) {
                   ingredients.add(ingredientController.text);
                   print(ingredients);
@@ -210,14 +225,16 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
                   _formKey.currentState.validate();
               });
             },
-            child: Container(
-              height: 6.5.h,
-              width: 5.h,
-              decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  color: Theme.of(context).primaryColor),
-              child: Icon(Icons.add, size: 3.h, color: Colors.white),
-            ),
+            child: ingredients.length > 29
+                ? Container()
+                : Container(
+                    height: 6.5.h,
+                    width: 5.h,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.rectangle,
+                        color: Theme.of(context).primaryColor),
+                    child: Icon(Icons.add, size: 3.h, color: Colors.white),
+                  ),
           ),
         ],
       ),
@@ -234,6 +251,8 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
           GestureDetector(
             onTap: () {
               setState(() {
+                FocusScope.of(context).unfocus();
+
                 if (stepController.text.length > 10) {
                   steps.add(stepController.text);
                   print(steps);
@@ -242,14 +261,16 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
                   _formKey.currentState.validate();
               });
             },
-            child: Container(
-              height: 6.5.h,
-              width: 5.h,
-              decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  color: Theme.of(context).primaryColor),
-              child: Icon(Icons.add, size: 3.h, color: Colors.white),
-            ),
+            child: steps.length > 29
+                ? Container()
+                : Container(
+                    height: 6.5.h,
+                    width: 5.h,
+                    decoration: BoxDecoration(
+                        shape: BoxShape.rectangle,
+                        color: Theme.of(context).primaryColor),
+                    child: Icon(Icons.add, size: 3.h, color: Colors.white),
+                  ),
           ),
         ],
       ),
@@ -331,6 +352,7 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
                 height: 15.h,
                 width: 90.w,
                 child: ListView(
+                  shrinkWrap: true,
                   scrollDirection: Axis.horizontal,
                   children: [
                     GestureDetector(
@@ -351,7 +373,7 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
                         });
                       },
                       child: Container(
-                        width: 20.w,
+                        width: images.length > 0 ? 20.w : 90.w,
                         height: 15.h,
                         decoration: BoxDecoration(
                             color: Theme.of(context).primaryColor,
@@ -360,8 +382,7 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
                           // mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Spacer(),
-                            Icon(FontAwesomeIcons.plusSquare,
-                                color: Colors.white),
+                            Icon(FontAwesomeIcons.camera, color: Colors.white),
                             Spacer(),
                           ],
                         ),
@@ -372,49 +393,52 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
                       child: Container(
                         margin: EdgeInsets.symmetric(horizontal: 2.w),
                         height: 15.h,
-                        width: images.length > 0
-                            ? ((images.length + 1) * 41.w) - 25.w
-                            : 100.w,
-                        child: ListView.builder(
-                          physics: NeverScrollableScrollPhysics(),
-                          scrollDirection: Axis.horizontal,
-                          itemCount: images.length,
-                          itemBuilder: (context, index) => Stack(
-                            // alignment: Alignment.center,
-                            children: [
-                              Container(
-                                margin: EdgeInsets.only(right: 2.w),
-                                // height: 15.h,
-                                width: 40.w,
-                                decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                        image:
-                                            FileImage(File(images[index].path)),
-                                        fit: BoxFit.cover),
-                                    color: Theme.of(context).primaryColor,
-                                    borderRadius: BorderRadius.circular(2.h)),
-                              ),
-                              Positioned(
-                                right: 5.w,
-                                top: 1.h,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      images.removeAt(index);
-                                    });
-                                  },
-                                  child: Container(
-                                    height: 4.h,
-                                    width: 4.h,
-                                    decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: Theme.of(context).primaryColor),
-                                    child: Icon(FontAwesomeIcons.trash,
-                                        size: 2.h, color: Colors.white),
+                        child: ConstrainedBox(
+                          constraints:
+                              BoxConstraints(maxWidth: 1000.h, minWidth: 0.h),
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            scrollDirection: Axis.horizontal,
+                            itemCount: images.length,
+                            itemBuilder: (context, index) => Stack(
+                              // alignment: Alignment.center,
+                              children: [
+                                Container(
+                                  margin: EdgeInsets.only(right: 2.w),
+                                  // height: 15.h,
+                                  width: 40.w,
+                                  decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                          image: FileImage(
+                                              File(images[index].path)),
+                                          fit: BoxFit.cover),
+                                      color: Theme.of(context).primaryColor,
+                                      borderRadius: BorderRadius.circular(2.h)),
+                                ),
+                                Positioned(
+                                  right: 5.w,
+                                  top: 1.h,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        images.removeAt(index);
+                                      });
+                                    },
+                                    child: Container(
+                                      height: 4.h,
+                                      width: 4.h,
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color:
+                                              Theme.of(context).primaryColor),
+                                      child: Icon(FontAwesomeIcons.trash,
+                                          size: 2.h, color: Colors.white),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
