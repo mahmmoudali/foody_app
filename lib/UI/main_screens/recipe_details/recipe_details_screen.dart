@@ -13,6 +13,12 @@ class RecipeDetailsScreen extends StatelessWidget {
 
   final RecipeDetailsPresenter presenter = RecipeDetailsPresenter();
 
+  List<String> images = [
+    "assets/images/food.jpeg",
+    "assets/images/food2.jpeg",
+    "assets/images/food3.jpeg"
+  ];
+
   @override
   Widget build(BuildContext _) {
     return ChangeNotifierProvider(
@@ -41,7 +47,7 @@ class RecipeDetailsScreen extends StatelessWidget {
                                     buildRecipeTitle(response),
                                     buildRecipeDescription(response),
                                     buildUserPhotoAndName(response),
-                                    buildRecipePhoto(context),
+                                    buildRecipePhoto(context, images),
                                     buildIngredients(response, context),
                                     buildSteps(response, context)
                                   ]),
@@ -97,15 +103,31 @@ class RecipeDetailsScreen extends StatelessWidget {
                   ),
                   SizedBox(width: 1.h),
                   Container(
+                    padding: EdgeInsets.only(top: .5.h),
                     width: 80.w,
-                    child: Text(
-                      response.result.recipe.directions[index],
-                      textAlign: TextAlign.start,
-                      style: TextStyle(
-                          color: Colors.grey[700],
-                          fontFamily: "Plex",
-                          // fontWeight: FontWeight.bold,
-                          fontSize: 11.sp),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Step ${index + 1}",
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                              color: Colors.grey[700],
+                              fontFamily: "Plex",
+                              fontWeight: FontWeight.bold,
+                              fontSize: 11.sp),
+                        ),
+                        SizedBox(height: .5.h),
+                        Text(
+                          response.result.recipe.directions[index],
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                              color: Colors.grey[700],
+                              fontFamily: "Plex",
+                              // fontWeight: FontWeight.bold,
+                              fontSize: 11.sp),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -212,18 +234,48 @@ Container buildRecipeTitle(RecipeResponse response) {
   );
 }
 
-Center buildRecipePhoto(BuildContext context) {
+Center buildRecipePhoto(BuildContext context, List<String> images) {
   return Center(
-    child: Container(
-      margin: EdgeInsets.only(bottom: 1.h, top: 1.h),
-      height: 25.h,
-      width: 90.w,
-      decoration: BoxDecoration(
-          image: DecorationImage(
-              image: AssetImage("assets/images/food.jpeg"), fit: BoxFit.cover),
-          color: Theme.of(context).primaryColor,
-          borderRadius: BorderRadius.circular(3.h)),
+    child: Visibility(
+      visible: images.length > 0,
+      child: Container(
+        // margin: EdgeInsets.symmetric(horizontal: 2.w),
+        height: 25.h,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: 1000.h, minWidth: 0.h),
+          child: ListView.builder(
+            shrinkWrap: true,
+            // physics: NeverScrollableScrollPhysics(),
+            scrollDirection: Axis.horizontal,
+            itemCount: images.length,
+            itemBuilder: (context, index) => Stack(
+              // alignment: Alignment.center,
+              children: [
+                Container(
+                  margin: EdgeInsets.only(bottom: 1.h, top: 1.h, right: 3.w),
+                  width: 90.w,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage(images[index]), fit: BoxFit.cover),
+                      color: Theme.of(context).primaryColor,
+                      borderRadius: BorderRadius.circular(3.h)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     ),
+    // child: Container(
+    //   margin: EdgeInsets.only(bottom: 1.h, top: 1.h),
+    //   height: 25.h,
+    //   width: 90.w,
+    //   decoration: BoxDecoration(
+    //       image: DecorationImage(
+    //           image: AssetImage("assets/images/food2.jpeg"), fit: BoxFit.cover),
+    //       color: Theme.of(context).primaryColor,
+    //       borderRadius: BorderRadius.circular(3.h)),
+    // ),
   );
 }
 

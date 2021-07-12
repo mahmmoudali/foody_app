@@ -27,6 +27,13 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
   List<String> ingredients = [];
   List<String> steps = [];
 
+  bool ingredientError = false;
+  bool stepError = false;
+  bool recipeError = false;
+  bool imageError = false;
+  bool ingredientFormError = false;
+  bool stepFormError = false;
+
   String title, recipetype, ingredient, step;
 
   @override
@@ -47,13 +54,13 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
                       children: [
                         buildAddImagesBar(context),
                         ValidationError(
-                          condition: images.length > 9,
+                          condition: imageError,
                           error: "Maximum 10 Images",
                         ),
                         buildTitleAndDescriptionForm(),
                         buildRecipeTypeDropDown(),
                         ValidationError(
-                          condition: recipetype == null,
+                          condition: recipeError,
                           error: "Recipe type required",
                         ),
                         buildIngredientsPart(context),
@@ -63,6 +70,30 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
                           child: DefaultButton(
                             color: Theme.of(context).primaryColor,
                             press: () {
+                              if (recipetype == null)
+                                recipeError = true;
+                              else
+                                recipeError = false;
+                              if (ingredients.length > 30 ||
+                                  ingredients.length < 1)
+                                ingredientError = true;
+                              else
+                                ingredientError = false;
+                              if (steps.length > 30 || steps.length < 2)
+                                stepError = true;
+                              else
+                                stepError = false;
+                              if (images.length > 9)
+                                imageError = true;
+                              else
+                                imageError = false;
+
+                              setState(() {
+                                _formKey.currentState.validate();
+                                stepFormError = false;
+                                ingredientFormError = false;
+                              });
+
                               //action here to submit data using post api
                             },
                             text: "Submit",
@@ -80,18 +111,27 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
 
   Column buildIngredientsPart(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         buildIngredientTextFormFieldWithAdd(context),
         ValidationError(
-          condition: ingredients.length > 29,
-          error: "Maximum 30 ingredients",
+          condition: ingredientFormError,
+          error: ingredientController.text.length > 63
+              ? "Ingredient maximum is 64 chars"
+              : "Ingredient minimum is 2 chars",
+        ),
+        ValidationError(
+          condition: ingredientError,
+          error: ingredients.length > 29
+              ? "Maximum 30 ingredients"
+              : "Minimum is 1 ingredient",
         ),
         Visibility(
           visible: ingredients.length > 0,
           child: ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: 300.h, minHeight: 0.h),
+            constraints: BoxConstraints(maxHeight: 20.h, minHeight: 0.h),
             child: ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
+              // physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemCount: ingredients.length,
               itemBuilder: (context, index) => Container(
@@ -105,13 +145,16 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
                           color: Colors.green[300].withOpacity(.5)),
                       padding:
                           EdgeInsets.symmetric(vertical: 1.h, horizontal: 1.w),
-                      child: Text(
-                        ingredients[index],
-                        style: TextStyle(
-                            fontFamily: "Plex",
-                            fontSize: 14.sp,
-                            // fontWeight: FontWeight.bold,
-                            color: Colors.black),
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 10.w),
+                        child: Text(
+                          ingredients[index],
+                          style: TextStyle(
+                              fontFamily: "Plex",
+                              fontSize: 14.sp,
+                              // fontWeight: FontWeight.bold,
+                              color: Colors.black),
+                        ),
                       )),
                   Positioned(
                     right: 1.w,
@@ -146,18 +189,25 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
 
   Column buildStepsPart(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         buildStepsTextFormFieldWithAdd(context),
         ValidationError(
-          condition: steps.length > 29,
-          error: "Maximum 30 steps",
+          condition: stepFormError,
+          error: stepController.text.length > 255
+              ? "Step maximum is 256 chars"
+              : "Step minimum is 8 chars",
+        ),
+        ValidationError(
+          condition: stepError,
+          error: steps.length > 29 ? "Maximum 30 steps" : "Minimum is 2 step",
         ),
         Visibility(
           visible: steps.length > 0,
           child: ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: 300.h, minHeight: 0.h),
+            constraints: BoxConstraints(maxHeight: 20.h, minHeight: 0.h),
             child: ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
+              // physics: NeverScrollableScrollPhysics(),
               shrinkWrap: true,
               itemCount: steps.length,
               itemBuilder: (context, index) => Container(
@@ -171,13 +221,16 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
                           color: Colors.green[300].withOpacity(.5)),
                       padding:
                           EdgeInsets.symmetric(vertical: 1.h, horizontal: 1.w),
-                      child: Text(
-                        steps[index],
-                        style: TextStyle(
-                            fontFamily: "Plex",
-                            fontSize: 14.sp,
-                            // fontWeight: FontWeight.bold,
-                            color: Colors.black),
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 10.w),
+                        child: Text(
+                          steps[index],
+                          style: TextStyle(
+                              fontFamily: "Plex",
+                              fontSize: 14.sp,
+                              // fontWeight: FontWeight.bold,
+                              color: Colors.black),
+                        ),
                       )),
                   Positioned(
                     right: 1.w,
@@ -217,12 +270,17 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
             onTap: () {
               setState(() {
                 FocusScope.of(context).unfocus();
-                if (ingredientController.text.length > 10) {
+
+                if (ingredientController.text.length > 63 ||
+                    ingredientController.text.length <= 1) {
+                  ingredientFormError = true;
+                } else {
+                  ingredientFormError = false;
+                  ingredientError = false;
                   ingredients.add(ingredientController.text);
                   print(ingredients);
                   ingredientController.clear();
-                } else
-                  _formKey.currentState.validate();
+                }
               });
             },
             child: ingredients.length > 29
@@ -252,13 +310,16 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
             onTap: () {
               setState(() {
                 FocusScope.of(context).unfocus();
-
-                if (stepController.text.length > 10) {
+                if (stepController.text.length > 255 ||
+                    stepController.text.length < 8) {
+                  stepFormError = true;
+                } else {
+                  stepFormError = false;
+                  if (steps.length >= 1) stepError = false;
                   steps.add(stepController.text);
                   print(steps);
                   stepController.clear();
-                } else
-                  _formKey.currentState.validate();
+                }
               });
             },
             child: steps.length > 29
@@ -459,6 +520,10 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
       validator: (value) {
         if (value.isEmpty)
           return "You must enter recipe title";
+        else if (value.length < 7)
+          return "recipe title must be more than 8 chars";
+        else if (value.length > 63)
+          return "recipe title maximum is 64 chars";
         else
           return null;
       },
@@ -485,6 +550,10 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
       validator: (value) {
         if (value.isEmpty)
           return "You must enter recipe description";
+        else if (value.length < 15)
+          return "recipe decription must be more than 8 chars";
+        else if (value.length > 127)
+          return "recipe decription maximum is 128 chars";
         else
           return null;
       },
@@ -506,14 +575,14 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
     return TextFormField(
       controller: ingredientController,
       onSaved: (newValue) => ingredient = newValue,
-      validator: (value) {
-        if (value.isEmpty)
-          return "You must enter ingredient content";
-        else if (value.length < 8)
-          return "ingredient must be more than 10 chars";
-        else
-          return null;
-      },
+      // validator: (value) {
+      //   if (value.isEmpty)
+      //     return "You must enter ingredient content";
+      //   else if (value.length < 8)
+      //     return "ingredient must be more than 10 chars";
+      //   else
+      //     return null;
+      // },
       onFieldSubmitted: (value) {
         FocusScope.of(context).unfocus();
         _ingredientKey.currentState.validate();
@@ -532,14 +601,14 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
     return TextFormField(
       controller: stepController,
       onSaved: (newValue) => ingredient = newValue,
-      validator: (value) {
-        if (value.isEmpty)
-          return "You must enter step content";
-        else if (value.length < 8)
-          return "step must be more than 10 chars";
-        else
-          return null;
-      },
+      // validator: (value) {
+      //   if (value.isEmpty)
+      //     return "You must enter step content";
+      //   else if (value.length < 8)
+      //     return "step must be more than 10 chars";
+      //   else
+      //     return null;
+      // },
       onFieldSubmitted: (value) {
         FocusScope.of(context).unfocus();
         _stepKey.currentState.validate();
