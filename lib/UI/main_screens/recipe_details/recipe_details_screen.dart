@@ -10,6 +10,7 @@ import 'package:sizer/sizer.dart';
 
 class RecipeDetailsScreen extends StatelessWidget {
   static final String routeName = "/RecipeDetailsScreen";
+
   final RecipeDetailsPresenter presenter = RecipeDetailsPresenter();
 
   @override
@@ -23,14 +24,7 @@ class RecipeDetailsScreen extends StatelessWidget {
             future: presenter.getRecipeDetails(),
             builder: (context, AsyncSnapshot<RecipeResponse> snapshot) {
               RecipeResponse response = snapshot.data;
-              if (snapshot.hasData) {
-                // Map<String,bool> ingredients;
-                response.result.recipe.ingredients.forEach((element) {
-                  provider.addIngredient(element);
-                });
-                print("alii" + provider.ingredients.toString());
-                // provider.ingredients=
-              }
+
               return Scaffold(
                 body: SafeArea(
                     child: snapshot.hasData
@@ -48,64 +42,8 @@ class RecipeDetailsScreen extends StatelessWidget {
                                     buildRecipeDescription(response),
                                     buildUserPhotoAndName(response),
                                     buildRecipePhoto(context),
-                                    buildIngredients(response, provider),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Padding(
-                                          padding: EdgeInsets.only(top: 1.h),
-                                          child: Text("Steps",
-                                              textAlign: TextAlign.start,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                  fontFamily: "Plex",
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 15.sp)),
-                                        ),
-                                        Container(
-                                          height: 120.h,
-                                          child: ListView.builder(
-                                            physics:
-                                                NeverScrollableScrollPhysics(),
-                                            itemCount: response.result.recipe
-                                                .directions.length,
-                                            itemBuilder: (context, index) =>
-                                                Container(
-                                              margin: EdgeInsets.symmetric(
-                                                  vertical: .5.h),
-                                              child: Row(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Icon(
-                                                    FontAwesomeIcons
-                                                        .checkCircle,
-                                                  ),
-                                                  SizedBox(width: 1.h),
-                                                  Container(
-                                                    width: 80.w,
-                                                    child: Text(
-                                                      response.result.recipe
-                                                          .directions[index],
-                                                      textAlign:
-                                                          TextAlign.start,
-                                                      style: TextStyle(
-                                                          color:
-                                                              Colors.grey[700],
-                                                          fontFamily: "Plex",
-                                                          // fontWeight: FontWeight.bold,
-                                                          fontSize: 11.sp),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        )
-                                      ],
-                                    )
+                                    buildIngredients(response, context),
+                                    buildSteps(response, context)
                                   ]),
                             ),
                           )
@@ -116,8 +54,72 @@ class RecipeDetailsScreen extends StatelessWidget {
         });
   }
 
-  Widget buildIngredients(
-      RecipeResponse response, RecipeDetailsProvider provider) {
+  Column buildSteps(RecipeResponse response, BuildContext context) {
+    final provider = Provider.of<RecipeDetailsProvider>(context, listen: true);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(top: 1.h),
+          child: Text("Steps",
+              textAlign: TextAlign.start,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                  fontFamily: "Plex",
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15.sp)),
+        ),
+        ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: 300.h, minHeight: 0.h),
+          child: ListView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: response.result.recipe.directions.length,
+            itemBuilder: (context, index) => Container(
+              margin: EdgeInsets.symmetric(vertical: .5.h),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: () => provider.changeStepValue(
+                        response.result.recipe.directions[index],
+                        !provider
+                            .steps[response.result.recipe.directions[index]]),
+                    child:
+                        provider.steps[response.result.recipe.directions[index]]
+                            ? Icon(FontAwesomeIcons.solidCheckCircle,
+                                color: Theme.of(context).primaryColor)
+                            : Icon(
+                                FontAwesomeIcons.checkCircle,
+                                color: Colors.black,
+                              ),
+                  ),
+                  SizedBox(width: 1.h),
+                  Container(
+                    width: 80.w,
+                    child: Text(
+                      response.result.recipe.directions[index],
+                      textAlign: TextAlign.start,
+                      style: TextStyle(
+                          color: Colors.grey[700],
+                          fontFamily: "Plex",
+                          // fontWeight: FontWeight.bold,
+                          fontSize: 11.sp),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget buildIngredients(RecipeResponse response, BuildContext context) {
+    final provider = Provider.of<RecipeDetailsProvider>(context, listen: true);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -132,18 +134,28 @@ class RecipeDetailsScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   fontSize: 15.sp)),
         ),
-        Container(
-          height: 65.h,
-          child: ListView.builder(
-            physics: NeverScrollableScrollPhysics(),
-            itemCount: response.result.recipe.ingredients.length,
-            itemBuilder: (context, index) => buildIngredientCheckBox(
-              onChanged: (bool newValue) => provider.value = newValue,
-              text: response.result.recipe.ingredients[index],
-              value: provider.value,
-            ),
-          ),
-        )
+        provider.ingredients != null
+            ? ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: 300.h, minHeight: 0.h),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: provider.ingredients.length,
+                  itemBuilder: (context, index) => buildIngredientCheckBox(
+                    lineThrough: provider
+                        .ingredients[response.result.recipe.ingredients[index]],
+                    onChanged: (bool newValue) =>
+                        // provider.value = newValue,
+                        provider.changeIngredientValue(
+                            response.result.recipe.ingredients[index],
+                            newValue),
+                    text: response.result.recipe.ingredients[index],
+                    value: provider
+                        .ingredients[response.result.recipe.ingredients[index]],
+                  ),
+                ),
+              )
+            : Container()
       ],
     );
   }
@@ -156,7 +168,7 @@ Container buildUserPhotoAndName(RecipeResponse response) {
       children: [
         CircleAvatar(
           radius: 2.h,
-          backgroundImage: AssetImage("assets/images/doctor.png"),
+          backgroundImage: AssetImage("assets/images/doctor.jpg"),
         ),
         SizedBox(width: 2.h),
         Text(
@@ -257,10 +269,12 @@ class buildIngredientCheckBox extends StatelessWidget {
     this.value,
     this.onChanged,
     this.text,
+    this.lineThrough,
   }) : super(key: key);
   final bool value;
   final Function(bool) onChanged;
   final String text;
+  final bool lineThrough;
 
   @override
   Widget build(BuildContext context) {
@@ -271,11 +285,16 @@ class buildIngredientCheckBox extends StatelessWidget {
           Checkbox(
             value: value,
             onChanged: onChanged,
+            checkColor: Colors.white,
+            activeColor: Theme.of(context).primaryColor,
           ),
           Text(
             text,
             textAlign: TextAlign.start,
             style: TextStyle(
+                decoration: lineThrough
+                    ? TextDecoration.lineThrough
+                    : TextDecoration.none,
                 color: Colors.grey[700],
                 fontFamily: "Plex",
                 // fontWeight: FontWeight.bold,
