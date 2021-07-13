@@ -34,7 +34,7 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
   bool ingredientFormError = false;
   bool stepFormError = false;
 
-  String title, recipetype, ingredient, step;
+  String title, recipetype = "Breakfast", ingredient, step, description;
 
   @override
   Widget build(BuildContext context) {
@@ -90,9 +90,18 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
 
                               setState(() {
                                 _formKey.currentState.validate();
+                                _formKey.currentState.save();
                                 stepFormError = false;
                                 ingredientFormError = false;
                               });
+                              print("---------------Result---------------");
+                              print(images.toString());
+                              print(title);
+                              print(description);
+                              print(recipetype);
+                              print(ingredients);
+                              print(steps);
+                              print("-----------------End-----------------");
 
                               //action here to submit data using post api
                             },
@@ -128,58 +137,63 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
         ),
         Visibility(
           visible: ingredients.length > 0,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: 20.h, minHeight: 0.h),
-            child: ListView.builder(
-              // physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: ingredients.length,
-              itemBuilder: (context, index) => Container(
-                  child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                      width: double.infinity,
-                      margin: EdgeInsets.symmetric(vertical: .2.h),
-                      decoration: BoxDecoration(
-                          color: Colors.green[300].withOpacity(.5)),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 1.h, horizontal: 1.w),
-                      child: Padding(
-                        padding: EdgeInsets.only(right: 10.w),
-                        child: Text(
-                          ingredients[index],
-                          style: TextStyle(
-                              fontFamily: "Plex",
-                              fontSize: 14.sp,
-                              // fontWeight: FontWeight.bold,
-                              color: Colors.black),
-                        ),
-                      )),
-                  Positioned(
-                    right: 1.w,
-                    // top: 1.h,
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          ingredients.removeAt(index);
-                        });
-                      },
-                      child: Container(
-                        height: 4.h,
-                        width: 4.h,
+          child: Container(
+            padding: EdgeInsets.all(.3.h),
+            decoration:
+                BoxDecoration(border: Border.all(color: Colors.blue[800])),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 15.h, minHeight: 10.h),
+              child: ListView.builder(
+                // physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: ingredients.length,
+                itemBuilder: (context, index) => Container(
+                    child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                        width: double.infinity,
+                        margin: EdgeInsets.symmetric(vertical: .2.h),
                         decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          // color:
-                          //     Theme.of(context).primaryColor
+                            color: Colors.green[300].withOpacity(.5)),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 1.h, horizontal: 1.w),
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 10.w),
+                          child: Text(
+                            ingredients[index],
+                            style: TextStyle(
+                                fontFamily: "Plex",
+                                fontSize: 14.sp,
+                                // fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          ),
+                        )),
+                    Positioned(
+                      right: 1.w,
+                      // top: 1.h,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            ingredients.removeAt(index);
+                          });
+                        },
+                        child: Container(
+                          height: 4.h,
+                          width: 4.h,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            // color:
+                            //     Theme.of(context).primaryColor
+                          ),
+                          child: Icon(FontAwesomeIcons.trash,
+                              size: 2.h, color: Theme.of(context).primaryColor),
                         ),
-                        child: Icon(FontAwesomeIcons.trash,
-                            size: 2.h, color: Theme.of(context).primaryColor),
                       ),
                     ),
-                  ),
-                ],
-              )),
+                  ],
+                )),
+              ),
             ),
           ),
         )
@@ -204,54 +218,59 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
         ),
         Visibility(
           visible: steps.length > 0,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: 20.h, minHeight: 0.h),
-            child: ListView.builder(
-              // physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: steps.length,
-              itemBuilder: (context, index) => Container(
-                  child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                      width: double.infinity,
-                      margin: EdgeInsets.symmetric(vertical: .2.h),
-                      decoration: BoxDecoration(
-                          color: Colors.green[300].withOpacity(.5)),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 1.h, horizontal: 1.w),
-                      child: Padding(
-                        padding: EdgeInsets.only(right: 10.w),
-                        child: Text(
-                          steps[index],
-                          style: TextStyle(
-                              fontFamily: "Plex",
-                              fontSize: 14.sp,
-                              // fontWeight: FontWeight.bold,
-                              color: Colors.black),
+          child: Container(
+            padding: EdgeInsets.all(.3.h),
+            decoration:
+                BoxDecoration(border: Border.all(color: Colors.blue[800])),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 15.h, minHeight: 10.h),
+              child: ListView.builder(
+                // physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: steps.length,
+                itemBuilder: (context, index) => Container(
+                    child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                        width: double.infinity,
+                        margin: EdgeInsets.symmetric(vertical: .2.h),
+                        decoration: BoxDecoration(
+                            color: Colors.green[300].withOpacity(.5)),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 1.h, horizontal: 1.w),
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 10.w),
+                          child: Text(
+                            steps[index],
+                            style: TextStyle(
+                                fontFamily: "Plex",
+                                fontSize: 14.sp,
+                                // fontWeight: FontWeight.bold,
+                                color: Colors.black),
+                          ),
+                        )),
+                    Positioned(
+                      right: 1.w,
+                      // top: 1.h,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            steps.removeAt(index);
+                          });
+                        },
+                        child: Container(
+                          height: 4.h,
+                          width: 4.h,
+                          decoration: BoxDecoration(),
+                          child: Icon(FontAwesomeIcons.trash,
+                              size: 2.h, color: Theme.of(context).primaryColor),
                         ),
-                      )),
-                  Positioned(
-                    right: 1.w,
-                    // top: 1.h,
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          steps.removeAt(index);
-                        });
-                      },
-                      child: Container(
-                        height: 4.h,
-                        width: 4.h,
-                        decoration: BoxDecoration(),
-                        child: Icon(FontAwesomeIcons.trash,
-                            size: 2.h, color: Theme.of(context).primaryColor),
                       ),
                     ),
-                  ),
-                ],
-              )),
+                  ],
+                )),
+              ),
             ),
           ),
         )
@@ -368,7 +387,7 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
               color: Colors.grey,
               size: 23,
             ),
-            selectedItem: recipetype ?? "Not selected",
+            selectedItem: recipetype,
             onDropDownItemClick: (selectedItem) {
               recipetype = selectedItem;
             },
@@ -397,14 +416,6 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "Insert Recipe Images",
-          style: TextStyle(
-              fontFamily: "Plex",
-              fontSize: 16.sp,
-              // fontWeight: FontWeight.bold,
-              color: Colors.black),
-        ),
         Padding(
           padding: EdgeInsets.symmetric(vertical: 1.h),
           child: Row(
@@ -439,11 +450,23 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
                         decoration: BoxDecoration(
                             color: Theme.of(context).primaryColor,
                             borderRadius: BorderRadius.circular(2.h)),
-                        child: Row(
+                        child: Column(
                           // mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Spacer(),
                             Icon(FontAwesomeIcons.camera, color: Colors.white),
+                            SizedBox(width: 2.w),
+                            images.length > 0
+                                ? Container()
+                                : Text(
+                                    "ADD",
+                                    textAlign: TextAlign.start,
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: "Plex",
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 11.sp),
+                                  ),
                             Spacer(),
                           ],
                         ),
@@ -546,7 +569,7 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
       inputFormatters: [
         // LengthLimitingTextInputFormatter(maxLength)
       ],
-      onSaved: (newValue) => title = newValue,
+      onSaved: (newValue) => description = newValue,
       validator: (value) {
         if (value.isEmpty)
           return "You must enter recipe description";
