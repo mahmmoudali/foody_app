@@ -94,15 +94,19 @@ class _AddNewRecipeScreenState extends State<AddNewRecipeScreen> {
                                 stepFormError = false;
                                 ingredientFormError = false;
                               });
-                              print("---------------Result---------------");
-                              print(images.toString());
-                              print(title);
-                              print(description);
-                              print(recipetype);
-                              print(ingredients);
-                              print(steps);
-                              print("-----------------End-----------------");
-
+                              if (!recipeError &&
+                                  !ingredientError &&
+                                  !stepError &&
+                                  !imageError) {
+                                print("---------------Result---------------");
+                                print(images.toString());
+                                print(title);
+                                print(description);
+                                print(recipetype);
+                                print(ingredients);
+                                print(steps);
+                                print("-----------------End-----------------");
+                              }
                               //action here to submit data using post api
                             },
                             text: "Submit",
